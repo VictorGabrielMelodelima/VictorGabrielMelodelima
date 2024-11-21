@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="">
+    <title>Dashboard com Tarefas</title>
+<style>
+    /*Fonte*/
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Georgian:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rethink+Sans:ital,wght@0,700;1,700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/*Reset*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+}
+
+/*Escolhas iniciais - home - design - escrever*/
+.dashboard {
+    width: 80px;
+    background-color: #333;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+/*Ícones da escolha  inicial*/
+.dashboard-icon {
+    width: 100%;
+    color: #fff;
+    text-align: center;
+    padding: 15px 0;
+    text-decoration: none;
+    transition: ease-in-out 0.3s;
+}
+
+/*ícones ao passar o mouse*/
+.dashboard-icon .home,
+.dashboard-icon.active {
+    background-color: #555;
+    border-radius: 20px;
+}
+
+.dashboard-icon:hover{
+    background-color: #555;
+    opacity: 0.5;
+    border-radius: 20px;
+}
+
+/*icon span*/
+.dashboard-icon span {
+    font-size: 24px;
+}
+
+/*icon p*/
+.dashboard-icon p {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/*div para armazenar as atividades*/
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+}
+
+/*Atividades*/
+.tasks {
+    display: flex;
+    justify-content: space-around;
+}
+
+/*div para armazenar h2 - pendente - em andamento - concluídas*/
+.column {
+    width: 30%;
+}
+
+/*h2 - div collum*/
+.column h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+/*classe criada - js*/
+.task-card {
+    background-color: #fff;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+/*classe criada - js - pendentes*/
+.task-card.pending {
+    border-left: 5px solid #FFD700;
+}
+
+/*classe criada - js - em andamento*/
+.task-card.in-progress {
+    border-left: 5px solid #FFA07A;
+}
+
+/*classe criada - js - concluídas*/
+.task-card.completed {
+    border-left: 5px solid #90EE90;
+}
+
+
+.task-card .date {
+    color: #888;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+.progress-bar {
+    width: 60px;
+    height: 8px;
+    background-color: #ddd;
+    border-radius: 4px;
+    margin-left: 5px;
+    position: relative;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+.progress-text {
+    font-size: 12px;
+    color: #555;
+    margin-left: 10px;
+}
+.progress-0 {
+    width: 0%;
+    background-color: #FFD700;
+}
+.progress-63 {
+    width: 63%;
+    background-color: #FFA07A;
+}
+.progress-100 {
+    width: 100%;
+    background-color: #90EE90;
+}
+.delete-btn {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.task-card:hover .delete-btn {
+    display: block;
+}
+
+/*Botão - Adicionar tarefa*/
+.add-task-btn {
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+#redirect-content {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.back-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 20px;
+}
+
+</style>
+</head>
+<body>
+    <!--Sidebar - navegação lateral-->
+    <nav class="dashboard">
+        <!-- Login -->
+        <a href="login.html" class="dashboard-icon" target="_blank">
+            <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z"/></svg>
+            </span>
+            <p >Login</p>
+        </a>
+
+        <!--Home-->
+        <a href="index.html" class="dashboard-icon home active">
+            <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
+            </span>
+            <p class="home">Home</p>
+        </a>
+
+        <!--Lembrete-->
+        <a href="data.html" class="dashboard-icon write" target="_blank">
+            <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
+            </span>
+            <p>Lembrete</p>
+        </a>
+    </nav>
+    
+    <section class="content" id="dashboard-content">
+        <!--Ao clicar vai ser direcionado a uma function JS-->
+        <button class="add-task-btn" onclick="addTask()">Adicionar Tarefa</button>
+        <!--div - tasks - Conter as atividades-->
+        <div class="tasks">
+            <div class="column" id="pending-column">
+                <h2>Pendentes</h2>
+            </div>
+            <div class="column" id="in-progress-column">
+                <h2>Em andamento</h2>
+            </div>
+            <div class="column" id="completed-column">
+                <h2>Concluídas</h2>
+            </div>
+        </div>
+    </section>
+
+    <!--div - ao apertar em deletar - voltar ao dashboard-->
+    <div id="redirect-content" class="content">
+        <h1>Teste de redirecionamento</h1>
+        <button class="back-btn" onclick="goBack()">Voltar para o Dashboard</button>
+    </div>
+
+
+    <!--Arquivo JS-->
+    <script>
+        document.getElementById('add-task-btn').addEventListener('click', addTask); // Adicionar evento para o botão
+
+function addTask() {
+    const taskName = prompt("Digite o nome da tarefa:");
+    if (taskName) {
+        const taskCard = createTaskCard(taskName, "0%", "pending");
+        document.getElementById("pending-column").appendChild(taskCard);
+    }
+}
+
+function createTaskCard(name, progressText, status) {
+    const taskCard = document.createElement("div");
+    taskCard.className = `task-card ${status}`;
+    taskCard.addEventListener('click', showRedirectContent); // Redirecionamento ao clicar
+    taskCard.innerHTML = `
+        <p>${name}</p>
+        <div class="date">
+            00/00/0000
+            <div class="progress-bar">
+                <div class="progress-bar-fill ${status === 'pending' ? 'progress-0' : status === 'in-progress' ? 'progress-63' : 'progress-100'}"></div>
+            </div>
+            <span class="progress-text">${progressText} concluído</span>
+        </div>
+        <button class="delete-btn">Deletar</button>
+        <button class="move-btn">${status === 'pending' ? 'Iniciar' : status === 'in-progress' ? 'Concluir' : ''}</button>
+    `;
+
+    // Adiciona evento para o botão de deletar
+    taskCard.querySelector('.delete-btn').addEventListener('click', (event) => deleteTask(event));
+
+    // Adiciona evento para o botão de mover para "Em progresso" ou "Concluído"
+    taskCard.querySelector('.move-btn').addEventListener('click', (event) => moveTask(event, taskCard));
+
+    return taskCard;
+}
+
+function deleteTask(event) {
+    event.stopPropagation();
+    const taskCard = event.target.closest('.task-card');
+    taskCard.remove();
+}
+
+function moveTask(event, taskCard) {
+    event.stopPropagation();
+
+    if (taskCard.classList.contains("pending")) {
+        // Mover de pendente para em progresso
+        moveToInProgress(taskCard);
+    } else if (taskCard.classList.contains("in-progress")) {
+        // Mover de em progresso para concluído
+        moveToCompleted(taskCard);
+    }
+}
+
+function moveToInProgress(taskCard) {
+    taskCard.classList.remove("pending");
+    taskCard.classList.add("in-progress");
+
+    // Atualiza a barra de progresso
+    const progressBar = taskCard.querySelector(".progress-bar-fill");
+    progressBar.classList.remove("progress-0");
+    progressBar.classList.add("progress-63");
+
+    // Atualiza o texto de progresso
+    taskCard.querySelector(".progress-text").innerText = "63% concluído";
+
+    // Altera o texto do botão
+    const moveBtn = taskCard.querySelector('.move-btn');
+    moveBtn.innerText = "Concluir";
+
+    // Move a tarefa para a coluna "Em Progresso"
+    document.getElementById("in-progress-column").appendChild(taskCard);
+}
+
+function moveToCompleted(taskCard) {
+    taskCard.classList.remove("in-progress");
+    taskCard.classList.add("completed");
+
+    // Atualiza a barra de progresso
+    const progressBar = taskCard.querySelector(".progress-bar-fill");
+    progressBar.classList.remove("progress-63");
+    progressBar.classList.add("progress-100");
+
+    // Atualiza o texto de progresso
+    taskCard.querySelector(".progress-text").innerText = "100% concluído";
+
+    // Remove o botão de mover, pois a tarefa já está concluída
+    const moveBtn = taskCard.querySelector('.move-btn');
+    moveBtn.remove();
+
+    // Move a tarefa para a coluna "Concluído"
+    document.getElementById("completed-column").appendChild(taskCard);
+}
+
+function showRedirectContent() {
+    document.getElementById("dashboard-content").style.display = "none";
+    document.getElementById("redirect-content").style.display = "flex";
+}
+
+function goBack() {
+    document.getElementById("dashboard-content").style.display = "flex";
+    document.getElementById("redirect-content").style.display = "none";
+}
+
+    </script>
+</body>
+</html>
